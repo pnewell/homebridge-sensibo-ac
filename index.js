@@ -51,6 +51,7 @@ class SensiboACPlatform {
 		this.enableSyncButton = config['enableSyncButton'] || false
 		this.syncButtonInAccessory = config['syncButtonInAccessory'] || false
 		this.externalHumiditySensor = config['externalHumiditySensor'] || false
+		this.externalApparentTemperatureSensor = config['externalApparentTemperatureSensor'] || false
 		this.devicesToExclude = config['devicesToExclude'] || []
 		this.ignoreHomeKitDevices = config['ignoreHomeKitDevices'] || false
 		this.locationsToInclude = config['locationsToInclude'] || []
