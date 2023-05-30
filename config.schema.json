@@ -163,7 +163,7 @@
 				"default": false,
 				"required": false
 			},
-			"externalApparentTemperatureSensor" {
+			"externalApparentTemperatureSensor": {
 				"title": "Enable Apparent Temperature Sensor",
 				"description": "Creates an additional standalone Apparent (Real Feel) Temperature Sensor accessory",
 				"type": "boolean",
