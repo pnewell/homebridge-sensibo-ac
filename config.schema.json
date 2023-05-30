@@ -163,6 +163,13 @@
 				"default": false,
 				"required": false
 			},
+			"externalApparentTemperatureSensor" {
+				"title": "Enable Apparent Temperature Sensor",
+				"description": "Creates an additional standalone Apparent (Real Feel) Temperature Sensor accessory",
+				"type": "boolean",
+				"default": false,
+				"required": false
+			},
 			"devicesToExclude": {
 				"title": "Devices to Exclude (Name/ID/Serial)",
 				"description": "Add device identifiers (Name, ID from logs or serial from Home app) to exclude them from homebridge",
