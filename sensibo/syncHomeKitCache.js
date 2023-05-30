@@ -3,6 +3,7 @@ const AirPurifier = require('./../homekit/AirPurifier')
 const AirQualitySensor = require('./../homekit/AirQualitySensor')
 const ClimateReactSwitch = require('./../homekit/ClimateReactSwitch')
 const HumiditySensor = require('./../homekit/HumiditySensor')
+const TemperatureSensor = require('./../homekit/TemperatureSensor')
 const OccupancySensor = require('./../homekit/OccupancySensor')
 const RoomSensor = require('./../homekit/RoomSensor')
 const SyncButton = require('./../homekit/SyncButton')
@@ -45,6 +46,13 @@ module.exports = (platform) => {
 						const humiditySensor = new HumiditySensor(airConditioner, platform)
 
 						platform.activeAccessories.push(humiditySensor)
+					}
+					
+					// Add (Apparent) Temperature Sensor if enabled
+					if (platform.externalApparentTemperatureSensor) {
+						const apparentTemperatureSensor = new TemperatureSensor(airConditioner, platform)
+
+						platform.activeAccessories.push(apparentTemperatureSensor)
 					}
 
 					// TODO: make if statements single line?
@@ -201,6 +209,16 @@ module.exports = (platform) => {
 						return device.id === accessory.context.deviceId && device.remoteCapabilities
 					})
 					if (!deviceExists || !platform.externalHumiditySensor) {
+						platform.log.easyDebug(`Cached ${accessory.context.type} accessory to be removed, name: ${accessory.displayName}`)
+						accessoriesToRemove.push(accessory)
+					}
+					break
+					
+				case 'TemperatureSensor':
+					deviceExists = platform.devices.find(device => {
+						return device.id === accessory.context.deviceId && device.remoteCapabilities
+					})
+					if (!deviceExists || !platform.externalApparentTemperatureSensor) {
 						platform.log.easyDebug(`Cached ${accessory.context.type} accessory to be removed, name: ${accessory.displayName}`)
 						accessoriesToRemove.push(accessory)
 					}
