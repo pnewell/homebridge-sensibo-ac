@@ -78,6 +78,15 @@ module.exports = (platform) => {
 					if (humiditySensor) {
 						humiditySensor.updateHomeKit()
 					}
+					
+					// Update Apparent Temperature Sensor state in HomeKit
+					const apparentTemperatureSensor = platform.activeAccessories.find(accessory => {
+						return accessory.type === 'ApparentTemperatureSensor' && accessory.id === device.id
+					})
+
+					if (apparentTemperatureSensor) {
+						apparentTemperatureSensor.updateHomeKit()
+					}
 
 					// Update Room Sensor state in cache + HomeKit
 					if (device.motionSensors && Array.isArray(device.motionSensors)) {
