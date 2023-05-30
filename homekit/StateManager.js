@@ -165,6 +165,11 @@ module.exports = (device, platform) => {
 				log.easyDebug(device.name, '(GET) - Current Relative Humidity is:', device.state.relativeHumidity, '%')
 				callback(null, device.state.relativeHumidity)
 			},
+			
+			CurrentApparentTemperature: (callback) => {
+				log.easyDebug(device.name, '(GET) - Current Apparent Temperature is:', device.state.apparentTemperature, '%')
+				callback(null, device.state.apparentTemperature)
+			},
 
 			ACSwing: (callback) => {
 				const swing = device.state.verticalSwing
