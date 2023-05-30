@@ -45,6 +45,58 @@ function toCelsius(value) {
 	return (value - 32) / 1.8
 }
 
+function apparentTemperature(temp, speed, humidity, { dewPoint, round } = {}) { // AAT
+	if (!isCorrect(temp, speed, humidity)) {
+		throw new Error('One of the required arguments are not specified');
+	}
+
+	if (speed < 0) {
+		throw new RangeError('AAT: wind speed must be >= 0');
+	}
+
+	if (!dewPoint && (humidity <= 0 || humidity > 100)) {
+		throw new RangeError('AAT: humidity must be in (0, 100]');
+	}
+
+	const wvp = dewPoint ? BaseFeels.getWVPbyDP(humidity) : BaseFeels.getWVP(temp, humidity);
+	return BaseFeels.tempConvert(AAT(temp, wvp, speed), '', '', round);
+}
+
+const isCorrect = data => !(data == null) && Number.isFinite(data);
+const AAT = (temp, WVP, speed) => temp + 0.33 * WVP - 0.70 * speed - 4.00;
+const WVP = (temp, humidity) =>
+  (humidity / 100) * 6.105 * Math.exp((17.27 * temp) / (237.7 + temp));
+const WVPbyDP = temp =>
+  6.11 * Math.exp(5417.7530 * (1 / 273.16 - 1 / (temp + 273.15)));
+const tempConvert = (temp, from, to) => {
+  if (!isCorrect(temp)) {
+    throw new TypeError('Temp must be specified and must be a number');
+  }
+  if (from === to) {
+    return temp;
+  }
+  if (!(['c', 'f', 'k'].includes(from) && ['c', 'f', 'k'].includes(to))) {
+    throw new RangeError('Units must be c, f or k');
+  }
+  if (from === 'c') {
+    return (to === 'f') ?
+      (temp * 1000 * (9 / 5) + 32 * 1000) / 1000 :
+      (temp * 1000 + 273.15 * 1000) / 1000;
+  }
+  if (from === 'f') {
+    return (to === 'c') ?
+      ((temp - 32) * 1000 * (5 / 9)) / 1000 :
+      ((temp + 459.67) * 1000 * (5 / 9)) / 1000;
+  }
+  return (to === 'c') ? // k
+    (temp * 1000 - 273.15 * 1000) / 1000 :
+    (temp * 1000 * (9 / 5) - 459.67 * 1000) / 1000;
+};
+
+function getWVP(value) {
+	return (value - 32) / 1.8
+}
+
 module.exports = {
 
 	deviceInformation: device => {
@@ -157,6 +209,7 @@ module.exports = {
 			targetTemperature: !device.acState.targetTemperature ? null : device.acState.temperatureUnit === 'C' ? device.acState.targetTemperature : toCelsius(device.acState.targetTemperature),
 			currentTemperature: device.measurements.temperature,
 			relativeHumidity: device.measurements.humidity,
+			apparentTemperature: apparentTemperature(device.measurements.temperature, 0.1, device.measurements.humidity),
 			smartMode: device.smartMode && device.smartMode.enabled,
 			light: device.acState.light && device.acState.light !== 'off',
 			pureBoost: device.pureBoostConfig && device.pureBoostConfig.enabled
@@ -240,6 +293,7 @@ module.exports = {
 			motionDetected: sensor.measurements.motion,
 			currentTemperature: sensor.measurements.temperature,
 			relativeHumidity: sensor.measurements.humidity,
+			apparentTemperature: apparentTemperature(sensor.measurements.temperature, 0.1, sensor.measurements.humidity),
 			lowBattery: sensor.measurements.batteryVoltage > 100 ? 'BATTERY_LEVEL_NORMAL' : 'BATTERY_LEVEL_LOW'
 		}
 
